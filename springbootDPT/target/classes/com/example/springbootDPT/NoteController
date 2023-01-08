@@ -1,0 +1,133 @@
+package com.example.springbootDPT;
+
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class NoteController {
+
+    private final NoteRepository repository;
+    private final NoteEntryRepository entryRepository;
+
+    NoteController(NoteRepository repository, NoteEntryRepository entryRepository) {
+        this.repository = repository;
+        this.entryRepository = entryRepository;
+    }
+
+    // Notes
+
+    @GetMapping("/notes")
+    List<Note> getAllNotes() {
+        return repository.findAll();
+    }
+
+    @GetMapping("/note/{id}")
+    Note getNoteById(@PathVariable Long id) {
+        Optional<Note> Note = repository.findById(id);
+        if (Note.isEmpty()) {
+            // throw new NoteNotFoundException(id);
+            return Note.get();
+        } else {
+            Note foundNote = Note.get();
+            return foundNote;
+        }
+    }
+
+    @PostMapping("/newnote")
+    public String createNote(@RequestBody Note newNote) {
+        repository.save(newNote);
+        return "Created Note: " + newNote.toString();
+    }
+
+    @PutMapping("/Note/{id}")
+    String updateNoteById(@RequestBody Note newNote, @PathVariable Long id) {
+        if (repository.findById(id).isEmpty()) {
+            Note Note = new Note(newNote.getTitle());
+            repository.save(Note);
+            return "Created Note: " + Note;
+        } else {
+            Note NoteFromDB = repository.findById(id).get();
+            NoteFromDB.setTitle(newNote.getTitle());
+            repository.save(NoteFromDB);
+            return "Updated Note: " + NoteFromDB;
+        }
+
+    }
+
+    @DeleteMapping("/note/{id}")
+    void deleteEmployee(@PathVariable Long id) {
+        repository.deleteById(id);
+    }
+
+    // Note Entries
+    @GetMapping("/note/{id}/entries")
+    List<NoteEntry> allEntriesPerId(@PathVariable Long id) {
+        List<NoteEntry> NoteEntries = entryRepository.findAllEntriesPerId(id);
+        if (NoteEntries.isEmpty()) {
+            // throw new NoteNotFoundException(id);
+            // log.warn("Not found", NoteEntries);
+            return NoteEntries;
+        } else {
+            return NoteEntries;
+        }
+    }
+
+    @GetMapping("/noteEntry/{id}")
+    NoteEntry getEntryById(@PathVariable Long id) {
+        Optional<NoteEntry> NoteEntry = entryRepository.findById(id);
+        if (NoteEntry.isEmpty()) {
+            // throw new NoteNotFoundException(id);
+            return NoteEntry.get();
+        } else {
+            NoteEntry foundNote = NoteEntry.get();
+            return foundNote;
+        }
+    }
+
+    @PostMapping("/note/{id}/newEntry")
+    public String createNoteEntry(@PathVariable Long id, @RequestBody NoteEntry NoteEntry) {
+        Note Note = getNoteById(id);
+        LocalDateTime dateTime = LocalDateTime.now();
+        NoteEntry newNoteEntry = new NoteEntry(Note.getId(), Note.getTitle(), NoteEntry.getHeading(),
+                NoteEntry.getContent(), dateTime);
+        entryRepository.save(newNoteEntry);
+        return "Created Note Entry: " + newNoteEntry.toString();
+    }
+
+    @DeleteMapping("/noteEntry/{id}")
+    void deleteEntryById(@PathVariable Long id) {
+        entryRepository.deleteById(id);
+    }
+
+    @PutMapping("/noteEntry/{id}")
+    String updateEntryById(@RequestBody NoteEntry newNoteEntry, @PathVariable Long id) {
+        if (entryRepository.findById(id).isEmpty()) {
+            NoteEntry NoteEntry = newNoteEntry;
+            entryRepository.save(NoteEntry);
+            return "Created Note Entry: " + NoteEntry;
+        } else {
+            NoteEntry entryFromDB = entryRepository.findById(id).get();
+            entryFromDB.setContent(newNoteEntry.getContent());
+            entryFromDB.setHeading(newNoteEntry.getHeading());
+            entryRepository.save(entryFromDB);
+            return "Updated Note: " + entryFromDB;
+        }
+
+    }
+}
