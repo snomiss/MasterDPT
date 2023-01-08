@@ -1,0 +1,90 @@
+package com.example.springbootDPT;
+
+import java.sql.Date;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+
+
+@Entity
+public class NoteEntry {
+    private @jakarta.persistence.Id @GeneratedValue Long Id;
+    private Long noteId;
+    private String note;
+    private String heading;
+    private String content;
+    private LocalDateTime date;
+
+    NoteEntry(){}
+
+    public NoteEntry(Long noteId, String note, String heading, String content, LocalDateTime date) {
+        this.noteId = noteId;
+        this.note = note;
+        this.heading = heading;
+        this.content = content;
+        this.date = date;
+    }
+  
+    public NoteEntry(String heading, String content, LocalDateTime date) {
+        this.heading = heading;
+        this.content = content;
+        this.date = date;
+    }
+
+    public NoteEntry(String heading, String content) {
+        this.heading = heading;
+        this.content = content;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public Long getnoteId() {
+        return noteId;
+    }
+
+    public void setnoteId(Long noteId) {
+        this.noteId = noteId;
+    }
+
+    public void setHeading(String heading) {
+        this.heading = heading;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getHeading() {
+        return heading;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public Long getId() {
+        return Id;
+    }
+
+    public String getnote() {
+        return note;
+    }
+
+    public void setnote(String note) {
+        this.note = note;
+    }
+
+    @Override
+    public String toString() {
+        return "NoteEntry [Id=" + Id + ", noteId=" + noteId + ", note=" + note + ", heading=" + heading
+                + ", content=" + content + ", date=" + date + "]";
+    }
+
+}
