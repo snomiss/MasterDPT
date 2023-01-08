@@ -1,6 +1,7 @@
 # MasterDPT
 
 Docker commands:
+
 docker run -e POSTGRES_PASSWORD=postgrespassword -p 5432:5432 -d postgres
 docker exec -it bash; name of the container: "docker container ps"
 psql -h localhost -U postgres
